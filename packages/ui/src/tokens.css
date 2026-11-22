@@ -1,0 +1,48 @@
+/* Cadence design tokens (spec §4): the single source of truth for CSS variables and the Tailwind theme.
+   Tailwind v4 turns each @theme entry into both a utility (bg-paper, text-ink, rounded-card...)
+   and a CSS variable on :root. Keep src/tokens.ts in sync; a unit test checks every hex here
+   appears in that file's mirror. */
+@theme {
+  --color-paper: #f3efe6;
+  --color-sheet: #fbf9f4;
+  --color-surface: #ffffff;
+  --color-ink: #101114;
+  --color-ink-2: #3b3d44;
+  --color-muted: #62646c;
+  --color-line: #e2ddd0;
+  --color-divider: #f0ece0;
+  --color-cobalt: #1b3bff;
+  --color-covered: #1e9a68;
+  --color-success: #0b7a52;
+  --color-success-pill-text: #07603f;
+  --color-success-pill-bg: #e1f2e8;
+  --color-headsup-bg: #fff0d6;
+  --color-headsup-border: #efcf93;
+  --color-headsup-text: #5c3200;
+  --color-headsup-strong: #4a2700;
+  --color-headsup-bar: #c77700;
+  --color-danger: #b42318;
+
+  --radius-card: 24px;
+  --radius-sheet: 32px;
+
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+:root {
+  --size-button: 58px;
+  --size-touch: 44px;
+  --motion-marker-stagger: 40ms;
+  --motion-ring: 600ms;
+  --motion-sheet: 280ms;
+}
+
+/* Spec: with prefers-reduced-motion, everything becomes a fade (no movement, no draw). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-marker-stagger: 0ms;
+    --motion-ring: 0ms;
+    --motion-sheet: 0ms;
+  }
+}
