@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+@import '@cadence/ui/tokens.css';
+@source '../../../../packages/ui/src';
+
+html {
+  background: var(--color-paper);
+}
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible {
+  outline: 3px solid var(--color-cobalt);
+  outline-offset: 2px;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
