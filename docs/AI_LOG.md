@@ -41,3 +41,30 @@ computed. TypeScript version pinned after reading peer ranges.
 bugs (sampled a rounded corner; used viewport-relative clip while the element was below the fold),
 not because the design failed. The test only covers a static sample on /dev/tokens until the real
 RhythmStrip exists in Phase 3; the DESIGN_NOTES say so.
+
+## Phase 2: billing-core (2026-11-21)
+
+**Generated:** money, periods, coverage, chargeMachine, dunning, reconcile, guard, their tests, ADR-005.
+
+**Process.** Tests were written before the implementation for money, coverage, chargeMachine, dunning
+and reconcile (confirmed red, then green). `periods` and `guard` were written test-and-implementation
+in one pass, so they did not get a genuine red step; the mutation check below is what I rely on there.
+
+**Verified:** 264 tests pass; coverage 99.4% statements / 97.4% branches / 98.5% functions / 99.3%
+lines (gate is 95%). Manual mutation check: 12 hand-made mutants (boundary flips, inverted
+comparisons, removed validation), all killed. This is my own script, not a mutation-testing tool.
+
+**What the AI got wrong or made up:**
+
+- My own test expectations were wrong twice: a "Home example" test whose amounts did not add up to the
+  spec's $20.23 spare, and a dunning test that expected no retry when one fit. Caught by running the
+  tests; the implementations were right.
+- `cancelAfterGivenUpPeriods = 2`, "past_due is still charged", and "insufficient allowance goes to
+  needs_review" are my assumptions, listed in ADR-005 for you to confirm.
+- Added `guard.ts`, which you did not ask for.
+- Local tooling became very slow mid-phase (a typecheck took 75 s; ESLint config imports took 60+ s
+  each; a full lint 2m54s) with the CPU idle, then recovered once files were cached. This points at
+  slow disk reads (Spotlight was indexing; the repo lives under ~/Desktop, which may be synced), not at
+  the code. Unconfirmed. If it recurs, move the repo out of ~/Desktop. CI timing is the real check.
+
+**You reviewed / changed:** _(fill in after your review)_
