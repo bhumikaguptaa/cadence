@@ -3,7 +3,7 @@
 Subscriptions you can actually see: recurring USDC subscriptions on Base, with a timeline of what
 lands when and a warning before a charge would fail.
 
-> Status: **Phase 1 (scaffold + design system)**. Product screens, billing engine and payments
+> Status: **Phase 2 (billing-core)**. Product screens, persistence and payments
 > arrive in later phases. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Run it

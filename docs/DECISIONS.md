@@ -109,3 +109,68 @@ pattern). A grayscale readability test guards this; it must be re-run on the rea
 1. WCAG 1.4.1 says color must not be the only means of conveying information. How did you apply it?
 2. How do you test "readable in grayscale" automatically, and what are the limits of that test?
 3. A design spec contradicts accessibility rules. What do you do? (Flag it, propose, get sign-off, record it.)
+
+---
+
+## ADR-005: billing-core design rules (Phase 2)
+
+**Context.** `packages/billing-core` is the platform piece: pure TypeScript, no React, no network, no
+clock reads. Every rule below is enforced by tests (264 tests, property-based where it fits, 99% line
+coverage, and a manual mutation check where 12 of 12 deliberately broken lines were caught).
+
+**Decisions.**
+
+1. **Money is bigint micro-USDC.** `parseUsdc` is strict: digits and one optional point only. Signs,
+   exponents, separators, spaces and a JS `number` are rejected. More than 6 decimals throws
+   `TOO_MANY_DECIMALS`; nothing is ever rounded on input. Rounding exists only in three named helpers,
+   `divFloor` (amounts we may spend), `divCeil` (amounts we need, e.g. a top-up), `divRoundHalfUp`
+   (display only; exact halves go up). Wire format is a canonical integer string.
+2. **Periods mirror the chain.** Seconds, not calendar months; period 0 starts at the permission
+   `start`; `start` inclusive, `end` exclusive. Allowance does not roll over, so only the _current_
+   period can be charged: a missed period is lost, we never catch up. Each window carries a
+   `deadline = min(period end, permission end)`.
+3. **Coverage is conservative.** Charges sorted by due time, then subscription id (code-unit order,
+   not locale), then amount, so output never depends on input order. The first charge that does not
+   fit is "uncovered"; everything after it is also reported uncovered. `shortfall` is the exact
+   top-up for that first charge; `coveredTotal + spare == balance` always.
+4. **The charge machine never throws on a bad move.** `transition()` returns `{ok:false, error}`.
+   All 42 (status x event) pairs are tested against a hand-written table. `flag_anomaly` is legal
+   from every state except `needs_review` (even `succeeded`, for late duplicate detection) and clears
+   any retry time so the scheduler cannot pick the charge up. Only an explicit human
+   `resolve_review` leaves `needs_review`.
+5. **Dunning scaling rule (exact).** `offset_k = max(offset_(k-1) + 1, 1, min(cap_k, floor(period *
+fractionBps_k / 10000)))`, measured from the first failure. Defaults: 20% capped at 2 days, 50%
+   capped at 5 days. 30-day period: +2d, +5d. 5-minute test period: +60s, +150s. A retry is only
+   scheduled strictly before the deadline; after the last retry, or if none fits, give up.
+6. **Reconcile is strict.** A charge is `matched` only if the transaction contains exactly one
+   subscriber to owner USDC transfer and exactly one owner to payout transfer, both for the plan
+   amount, and nothing else. Anything else is `needs_review` with all reasons named in a fixed order.
+   A reverted transaction is a plain `failed`. A non-zero owner balance afterwards adds an alert.
+7. **`guard.ts` (not in the original plan).** One pure pre-charge function for the four brief
+   invariants, returning the first violated rule and what to do (`skip`, `mark_revoked`,
+   `needs_review`).
+
+**Assumptions to confirm (I made these up, they are not from the docs).**
+
+- `cancelAfterGivenUpPeriods = 2`: the first given-up period makes the subscription `past_due`, a
+  second consecutive one cancels it. The brief only says "past_due, then canceled per policy".
+- `past_due` subscriptions are still charged in later periods.
+- Insufficient remaining allowance on an active permission goes to `needs_review`, not a retry.
+
+**Rejected.** A `Money` class wrapping bigint (more ceremony than value at this size; a named type
+alias and strict functions are enough). Floating-point percentages in dunning (basis points keep it
+integer). Calendar-month periods (do not match the chain). Marking later smaller charges as covered
+after the first shortfall (more accurate but confusing, and the spec says the strip turns amber from
+the first shortfall).
+
+**Known limits.** `reconcile` inputs are abstract; real log shapes from the SDK's spend-plus-forward
+transaction are confirmed in Phase 6. 5-minute test periods are shorter than the GitHub Actions cron
+granularity, so Phase 6 will drive them with the manual "Run now" endpoint.
+
+**Interview questions.**
+
+1. Why is a missed billing period never charged later? (Allowance resets per period and does not roll over.)
+2. Why must coverage output not depend on input order, and how did you prove it? (Total order for ties; property test with shuffled input.)
+3. Why bigint and strict parsing instead of `parseFloat` and `toFixed(2)`? Name one concrete bug floats cause.
+4. Why does reconcile treat "an extra transfer" as an anomaly instead of ignoring it?
+5. What does mutation testing tell you that coverage numbers don't?
