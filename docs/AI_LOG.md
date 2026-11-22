@@ -68,3 +68,29 @@ comparisons, removed validation), all killed. This is my own script, not a mutat
   the code. Unconfirmed. If it recurs, move the repo out of ~/Desktop. CI timing is the real check.
 
 **You reviewed / changed:** _(fill in after your review)_
+
+## Phase 3, commit 1: Storybook setup (2026-11-22)
+
+**Generated:** Storybook 10.6.8 config in `packages/ui/.storybook`, vitest "storybook" project (stories
+run as tests in real Chromium, with axe), CI steps (story tests, Storybook build, artifact), a seed
+`Foundations/Colors` story, shared `base.css`, ADR-005 owner confirmations.
+
+**Verified rather than assumed:** I planted a story with an unnamed button and low-contrast text and
+confirmed the story test FAILS on both axe rules (`button-name`, `color-contrast`), with and without
+my setup file. So "axe-clean" in later commits means something. Unit (264), stories (3), web e2e (8),
+typecheck, lint and format all pass in the new `~/code/cadence` clone, and lint now takes seconds.
+
+**What the AI got wrong or flagged:**
+
+- I wrote a `setProjectAnnotations` setup file out of habit; Storybook 10.3+ applies the annotations
+  automatically (its own log said so). Removed.
+- Added `@vitejs/plugin-react` from my plan, then removed it: `@storybook/react-vite` already bundles it.
+- Storybook sends anonymous telemetry by default; disabled in `main.ts`.
+- Known, not fixed: `eslint-plugin-react` / `-react-hooks` (pulled in by eslint-config-next) declare
+  peer support only up to ESLint 9, while we run ESLint 10. Lint works today; if a plugin misbehaves,
+  pinning ESLint 9.39.5 is the fix.
+- `esbuild`'s build script is ignored by pnpm's default policy; Storybook still builds and tests run.
+- Branch protection could not be applied: the repo is still PRIVATE (confirmed three ways), so GitHub
+  returns 403. Phase 2 had landed in `phase-1/scaffold` rather than `main`; fixed by PR #3.
+
+**You reviewed / changed:** _(fill in after your review)_

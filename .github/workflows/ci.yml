@@ -26,6 +26,13 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:stories
+      - run: pnpm build-storybook
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: packages/ui/storybook-static
+          retention-days: 7
       - run: pnpm e2e
       - uses: actions/upload-artifact@v4
         if: failure()

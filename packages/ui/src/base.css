@@ -1,0 +1,17 @@
+/* Base element styles shared by the web app and Storybook, so they cannot drift apart. */
+html,
+body {
+  background: var(--color-paper);
+}
+body {
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible {
+  outline: 3px solid var(--color-cobalt);
+  outline-offset: 2px;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

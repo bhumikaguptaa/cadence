@@ -150,12 +150,15 @@ fractionBps_k / 10000)))`, measured from the first failure. Defaults: 20% capped
    invariants, returning the first violated rule and what to do (`skip`, `mark_revoked`,
    `needs_review`).
 
-**Assumptions to confirm (I made these up, they are not from the docs).**
+**Confirmed by the owner (2026-11-22; these were my assumptions, not from the docs).**
 
 - `cancelAfterGivenUpPeriods = 2`: the first given-up period makes the subscription `past_due`, a
-  second consecutive one cancels it. The brief only says "past_due, then canceled per policy".
-- `past_due` subscriptions are still charged in later periods.
+  second consecutive one cancels it.
+- A `past_due` subscription is charged for the **current period only** and is **never back-charged**.
+  A missed period is gone, not owed. The UI must say so (the `MissedPeriodNote` component, shown on the
+  subscription detail screen and in the charge history of `past_due` subscriptions).
 - Insufficient remaining allowance on an active permission goes to `needs_review`, not a retry.
+- `guard.ts` stays.
 
 **Rejected.** A `Money` class wrapping bigint (more ceremony than value at this size; a named type
 alias and strict functions are enough). Floating-point percentages in dunning (basis points keep it
