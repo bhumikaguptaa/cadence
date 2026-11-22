@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@import '../src/tokens.css';
+@import '../src/base.css';
+@source '../src';
+
+/* next/font sets these variables in the web app; in Storybook the fontsource files provide the faces. */
+:root {
+  --font-instrument-serif: 'Instrument Serif';
+  --font-inter: 'Inter';
+}

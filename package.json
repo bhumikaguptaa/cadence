@@ -13,9 +13,12 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "e2e": "playwright test"
+    "test": "vitest run --project unit",
+    "test:coverage": "vitest run --project unit --coverage",
+    "e2e": "playwright test",
+    "test:stories": "vitest run --project storybook",
+    "storybook": "pnpm --filter @cadence/ui storybook",
+    "build-storybook": "pnpm --filter @cadence/ui build-storybook"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
