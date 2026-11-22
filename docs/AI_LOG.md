@@ -32,3 +32,12 @@ computed. TypeScript version pinned after reading peer ranges.
   never run on GitHub, so "CI green" is unverified until you push.
 
 **You reviewed / changed:** _(fill in after your review)_
+
+## Phase 1 follow-up: accessibility conflict resolution
+
+**Generated:** `amber-ink` token, hatch pattern, grayscale Playwright test, ADR-004.
+
+**What the AI got wrong or flagged:** my first grayscale test failed twice because of my own test
+bugs (sampled a rounded corner; used viewport-relative clip while the element was below the fold),
+not because the design failed. The test only covers a static sample on /dev/tokens until the real
+RhythmStrip exists in Phase 3; the DESIGN_NOTES say so.

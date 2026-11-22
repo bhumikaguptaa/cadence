@@ -92,11 +92,16 @@ export default function TokensPage() {
             })}
           </tbody>
         </table>
-        <p className="mt-4 rounded-card border border-headsup-border bg-headsup-bg p-4 text-headsup-text">
-          Known conflict: covered green and heads-up amber have almost the same lightness (
-          {contrastRatio(colors.covered, colors.headsUpBar).toFixed(2)}:1 between them). The rhythm
-          strip must add hatching and a text label to uncovered segments; color alone is not enough.
-        </p>
+        <figure className="mt-6" aria-labelledby="track-cap" data-testid="track-sample">
+          <figcaption id="track-cap" className="text-sm text-muted">
+            Rhythm track sample (ADR-004): covered is solid, uncovered is hatched and labeled.
+          </figcaption>
+          <div className="mt-2 flex h-6 overflow-hidden rounded-full border border-line">
+            <div className="w-2/3 bg-covered" data-testid="track-covered" />
+            <div className="hatch-uncovered w-1/3" data-testid="track-uncovered" />
+          </div>
+          <p className="mt-2 text-sm font-medium text-amber-ink">Not covered · $2.89 short</p>
+        </figure>
       </section>
 
       <section aria-labelledby="type">

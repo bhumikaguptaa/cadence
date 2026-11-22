@@ -18,6 +18,8 @@ export const colors = {
   headsUpText: '#5C3200',
   headsUpStrong: '#4A2700',
   headsUpBar: '#C77700',
+  /** Amber for text and strokes on light backgrounds. Use instead of headsUpBar for anything thin. */
+  amberInk: '#8A5200',
   danger: '#B42318',
 } as const;
 
@@ -71,6 +73,10 @@ export const contrastPairs: readonly ContrastPair[] = [
     bg: colors.headsUpBg,
     min: 4.5,
   },
+  { name: 'amber ink on paper', fg: colors.amberInk, bg: colors.paper, min: 4.5 },
+  { name: 'amber ink on sheet', fg: colors.amberInk, bg: colors.sheet, min: 4.5 },
+  { name: 'amber ink on surface', fg: colors.amberInk, bg: colors.surface, min: 4.5 },
+  { name: 'amber ink on heads-up bg', fg: colors.amberInk, bg: colors.headsUpBg, min: 4.5 },
   { name: 'covered track on paper (graphic)', fg: colors.covered, bg: colors.paper, min: 3 },
   { name: 'heads-up bar on paper (graphic)', fg: colors.headsUpBar, bg: colors.paper, min: 3 },
 ];

@@ -38,12 +38,16 @@ describe('design tokens', () => {
   });
 
   /**
-   * KNOWN DESIGN CONFLICT (docs/DESIGN_CONFLICTS.md #1): the covered green and the heads-up amber
-   * have almost identical lightness, so they cannot be told apart by lightness alone.
-   * This test pins the fact so nobody assumes color alone separates them; the rhythm strip must
-   * add a non-color cue (hatching + text label) to uncovered segments.
+   * DESIGN DECISION (ADR-004, docs/DESIGN_NOTES.md): the original heads-up bar (#C77700) has the
+   * same lightness as the covered green (1.03:1), so color alone cannot separate them. We pin that
+   * fact, require a non-color cue (hatch + label) on uncovered segments, and use amberInk for thin
+   * amber strokes/text, which does differ in lightness from the covered green.
    */
-  it('documents that covered green and heads-up amber are NOT separable by lightness', () => {
+  it('pins that the original amber bar is NOT separable from covered green by lightness', () => {
     expect(contrastRatio(colors.covered, colors.headsUpBar)).toBeLessThan(1.2);
+  });
+
+  it('amber ink differs from covered green in lightness (>= 1.5:1)', () => {
+    expect(contrastRatio(colors.covered, colors.amberInk)).toBeGreaterThanOrEqual(1.5);
   });
 });

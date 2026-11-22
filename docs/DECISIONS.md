@@ -85,3 +85,27 @@ a token change that breaks accessibility fails CI.
 1. Why did you pin TypeScript below the latest major? (Tooling compatibility, checked via peer ranges.)
 2. Why compute contrast in tests instead of eyeballing a design file?
 3. Why is billing logic in a package with no React or network dependency?
+
+---
+
+## ADR-004: Never rely on color alone for covered vs. uncovered (Phase 1)
+
+**Context.** The spec's covered green (#1E9A68) and heads-up amber (#C77700) have a 1.03:1 lightness
+ratio, contradicting the spec's own rule that colors to be told apart must differ in lightness.
+
+**Decision (owner-approved 2026-11-21).** Add a non-color cue: hatching plus a text label on uncovered
+rhythm-strip segments. Add `amber-ink #8A5200` (at least 4.5:1 on all light surfaces) for amber text
+and thin strokes. Keep the spec's original tokens otherwise.
+
+**Rejected.** Only darkening the amber (fixes lightness but still leaves color as the sole carrier;
+fails for monochrome displays and some color-vision types). Changing the covered green (departs
+further from the spec).
+
+**Consequences.** Every state that uses color to carry meaning needs a second channel (text, icon or
+pattern). A grayscale readability test guards this; it must be re-run on the real component in Phase 3.
+
+**Interview questions.**
+
+1. WCAG 1.4.1 says color must not be the only means of conveying information. How did you apply it?
+2. How do you test "readable in grayscale" automatically, and what are the limits of that test?
+3. A design spec contradicts accessibility rules. What do you do? (Flag it, propose, get sign-off, record it.)

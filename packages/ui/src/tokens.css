@@ -21,6 +21,7 @@
   --color-headsup-text: #5c3200;
   --color-headsup-strong: #4a2700;
   --color-headsup-bar: #c77700;
+  --color-amber-ink: #8a5200; /* amber text/strokes on light backgrounds (>= 4.5:1) */
   --color-danger: #b42318;
 
   --radius-card: 24px;
@@ -45,4 +46,15 @@
     --motion-ring: 0ms;
     --motion-sheet: 0ms;
   }
+}
+
+/* Uncovered segment of the rhythm track (ADR-004): never color alone. Diagonal amber-ink hatch on
+   the heads-up tint, always paired with a text label. */
+.hatch-uncovered {
+  background-color: var(--color-headsup-bg);
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--color-amber-ink) 0 2px,
+    var(--color-headsup-bg) 2px 6px
+  );
 }

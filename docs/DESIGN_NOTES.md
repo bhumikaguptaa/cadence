@@ -2,21 +2,23 @@
 
 ## Conflicts between the spec and its own accessibility rules
 
-### 1. Covered green vs. heads-up amber are the same lightness
+### 1. Covered green vs. heads-up amber were the same lightness (RESOLVED, ADR-004)
 
-Spec §4: "colors that must be told apart also differ in lightness". The tokens `covered #1E9A68` and
-`heads-up bar #C77700` have luminance 0.244 vs 0.253, a **1.03:1** ratio. A color-blind user (and
-grayscale printing) cannot tell the covered part of the rhythm strip from the amber warning by color.
+Spec §4: "colors that must be told apart also differ in lightness". The original tokens
+`covered #1E9A68` and `heads-up bar #C77700` have luminance 0.244 vs 0.253, a **1.03:1** ratio, so a
+color-blind user could not tell the covered part of the rhythm strip from the warning by color.
 
-Decision pending owner OK. Proposal, keeping the exact token values:
+Owner decision (2026-11-21), implemented in tokens and tests:
 
-- Uncovered segments of the track use a **diagonal hatch** plus a text label ("$2.89 short") and a
-  warning icon on the first uncovered marker. Covered stays solid.
-- The summary line and the equivalent list below the strip already state coverage in words.
-- Alternative if you want color to carry it: darken the amber bar to about `#8A5200` (≈ 5:1 on paper),
-  which also separates it from green by lightness.
-
-`packages/ui/src/tokens.test.ts` pins this fact so no component assumes color alone works.
+- Uncovered segments use the `.hatch-uncovered` pattern (diagonal `amber-ink` stripes on the heads-up
+  tint) **and** a text label, e.g. "Not covered · $2.89 short". Covered stays solid.
+- New token `amber-ink #8A5200` for amber text and thin strokes on light backgrounds: 5.57:1 on
+  paper, 6.07 on sheet, 6.39 on surface, 5.68 on heads-up bg. It also differs from covered green by
+  1.79:1 in lightness. `headsUpBar #C77700` stays for large fills only (3.02:1 on paper is graphic-only).
+- Tests: token contrast pairs (unit); `e2e/grayscale.spec.ts` renders the track sample in grayscale
+  and requires the covered segment to be flat (std 0) and the uncovered one textured (std about 73,
+  threshold 40), plus the label. **Phase 3 must re-run this same check against the real RhythmStrip**
+  (the current test uses a static sample on /dev/tokens, so the real component is not yet covered).
 
 ## State: "Open in your browser" (Coinbase Wallet in-app browser)
 
