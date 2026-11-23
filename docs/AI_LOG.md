@@ -94,3 +94,37 @@ typecheck, lint and format all pass in the new `~/code/cadence` clone, and lint 
   returns 403. Phase 2 had landed in `phase-1/scaffold` rather than `main`; fixed by PR #3.
 
 **You reviewed / changed:** _(fill in after your review)_
+
+## Phase 3, commit 2: primitives (2026-11-22)
+
+**Generated:** `MoneyText`, `StatusPill`, `MonogramTile`, `ConsentSheet` (native `<dialog>`), their stories
+and play tests, `merchantColor` (FNV-1a), `groupThousands`, `cx`, `components.css`.
+
+**Verified:** 36 story tests (render + play + axe), 274 unit tests, 8 e2e, typecheck, lint, Storybook
+build. I viewed screenshots of the sheet, pills, palette and awkward names at 390px. Two deliberate
+sabotages of `ConsentSheet` were caught: losing focus after close fails 4 tests; removing Esc handling
+fails 2. So the focus-return and Esc tests can fail.
+
+**What the AI got wrong:**
+
+- **I deleted the ADR-004 hatch rule.** A script I wrote to replace the reduced-motion block in
+  `tokens.css` truncated the rest of the file, including `.hatch-uncovered`. The grayscale e2e test from
+  ADR-004 caught it. Restored (now in `components.css`). Lesson: edit CSS with targeted replacements.
+- My first focus-trap test asserted "focus is always inside the dialog". A trace showed focus goes to
+  `<body>` (browser UI) after the last control, as native modal dialogs do. The test over-asserted; it
+  now checks the real guarantee: the page behind never receives focus, by Tab or by script.
+- I wrote `merchantColor`'s pinned test values without computing them (wrong order). Two are now
+  checked against published FNV-1a vectors; `studio-notes` is a regression pin only.
+- Prettier reflowed one expression into an ASI hazard that ESLint flagged; rewritten as statements.
+- A static-file server in Python was unreachable here (probably the macOS firewall); used Node.
+
+**Changed from the Phase 1 tokens:** under `prefers-reduced-motion` the durations are no longer zeroed:
+the spec says everything becomes a fade, so each component fades instead. `--motion-fade: 200ms` is my
+choice; the spec gives no fade duration.
+
+**Design choices to confirm:** `StatusPill` labels and tones (Paid / Pending / Past due / Needs review /
+Failed / Canceled / Expired / Scheduled / Active); the Failed pill is an outlined red pill because the
+spec defines no light-red background; monogram letters are Instrument Serif at 24-36px so white-on-tile
+only needs 3:1 (WCAG large text); `ConsentSheet` closes instantly (the spec only defines the slide-up).
+
+**You reviewed / changed:** _(fill in after your review)_

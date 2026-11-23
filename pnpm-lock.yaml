@@ -76,6 +76,10 @@ importers:
   packages/billing-core: {}
 
   packages/ui:
+    dependencies:
+      '@cadence/billing-core':
+        specifier: workspace:*
+        version: link:../billing-core
     devDependencies:
       '@fontsource/instrument-serif':
         specifier: 5.3.0

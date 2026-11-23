@@ -39,22 +39,8 @@
   --motion-sheet: 280ms;
 }
 
-/* Spec: with prefers-reduced-motion, everything becomes a fade (no movement, no draw). */
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --motion-marker-stagger: 0ms;
-    --motion-ring: 0ms;
-    --motion-sheet: 0ms;
-  }
-}
-
-/* Uncovered segment of the rhythm track (ADR-004): never color alone. Diagonal amber-ink hatch on
-   the heads-up tint, always paired with a text label. */
-.hatch-uncovered {
-  background-color: var(--color-headsup-bg);
-  background-image: repeating-linear-gradient(
-    135deg,
-    var(--color-amber-ink) 0 2px,
-    var(--color-headsup-bg) 2px 6px
-  );
+/* Reduced motion is handled per component (components.css): movement and drawing become a short fade.
+   Durations are NOT zeroed here, because the spec says "everything becomes a fade", not "instant". */
+:root {
+  --motion-fade: 200ms;
 }
