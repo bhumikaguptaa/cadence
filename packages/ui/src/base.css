@@ -1,3 +1,5 @@
+@import './components.css';
+
 /* Base element styles shared by the web app and Storybook, so they cannot drift apart. */
 html,
 body {
