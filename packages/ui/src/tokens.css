@@ -37,6 +37,7 @@
   --motion-marker-stagger: 40ms;
   --motion-ring: 600ms;
   --motion-sheet: 280ms;
+  --motion-sheet-out: 180ms;
 }
 
 /* Reduced motion is handled per component (components.css): movement and drawing become a short fade.

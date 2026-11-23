@@ -33,8 +33,35 @@ export function ConsentSheet({
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
+
+    if (open) {
+      dialog.removeAttribute('data-closing'); // reopened mid-exit: cancel the exit
+      if (!dialog.open) dialog.showModal();
+      return;
+    }
+    if (!dialog.open) return;
+
+    // Exit: play the ~180ms slide-down/fade (CSS, keyed on data-closing), THEN close(). Closing last keeps the
+    // browser's native "focus returns to the opener" behavior. The timer is a safety net: if no animation runs
+    // (hidden tab, animations disabled) the sheet still closes instead of getting stuck open.
+    dialog.setAttribute('data-closing', '');
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      dialog.removeAttribute('data-closing');
+      if (dialog.open) dialog.close();
+    };
+    const onEnd = (event: AnimationEvent) => {
+      // Only the sheet's own animation, not the ::backdrop's.
+      if (event.target === dialog && event.pseudoElement === '') finish();
+    };
+    dialog.addEventListener('animationend', onEnd);
+    const safetyNet = window.setTimeout(finish, 400);
+    return () => {
+      dialog.removeEventListener('animationend', onEnd);
+      window.clearTimeout(safetyNet);
+    };
   }, [open]);
 
   // Real Esc raises a native "cancel". We stop the browser closing it itself and let the parent decide.
