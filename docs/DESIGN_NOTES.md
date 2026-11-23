@@ -20,6 +20,21 @@ Owner decision (2026-11-21), implemented in tokens and tests:
   threshold 40), plus the label. **Phase 3 must re-run this same check against the real RhythmStrip**
   (the current test uses a static sample on /dev/tokens, so the real component is not yet covered).
 
+## Color roles (owner decision, 2026-11-22)
+
+- **Red (`danger #B42318`) is reserved for destructive actions** (revoke, cancel). It never marks a status.
+- **Amber is the "needs attention" color**, including a failed charge: `StatusPill` "Failed" is
+  `amber-ink #8A5200` on the heads-up tint `#FFF0D6` (5.68:1) with its cross icon and a text label.
+  Failed, Past due, Needs review and Pending therefore share a tone and are told apart by label and icon.
+- **Green is for success and coverage.** Neutral (muted ink on divider) is for closed states.
+
+## Sheet motion
+
+Opens with a 280ms slide-up (spec). Closes with a 180ms slide-down plus scrim fade: the component marks
+the dialog `data-closing`, waits for the CSS animation, then calls `dialog.close()`, so the browser's
+native focus return to the opener still happens. A 400ms timer guarantees the sheet closes even if no
+animation runs. Under `prefers-reduced-motion` both directions become a 200ms fade.
+
 ## State: "Open in your browser" (Coinbase Wallet in-app browser)
 
 Why it exists: spend permissions inside the Coinbase Wallet app (formerly Base App) are documented as

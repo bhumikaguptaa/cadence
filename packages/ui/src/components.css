@@ -36,6 +36,38 @@
   }
 }
 
+/* Sheet close: ~180ms slide-down. The component sets data-closing, waits for this to finish, then calls
+   dialog.close() (so native focus return still happens, just after the exit). */
+@keyframes cd-sheet-out {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes cd-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.cd-sheet[data-closing] {
+  animation: cd-sheet-out var(--motion-sheet-out) ease-in both;
+  pointer-events: none;
+}
+.cd-sheet[data-closing]::backdrop {
+  animation: cd-fade-out var(--motion-sheet-out) ease-in both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-sheet[data-closing],
+  .cd-sheet[data-closing]::backdrop {
+    animation: cd-fade-out var(--motion-fade) ease-in both;
+  }
+}
+
 /* Modal open: keep the page behind from scrolling. */
 body:has(.cd-sheet[open]) {
   overflow: hidden;

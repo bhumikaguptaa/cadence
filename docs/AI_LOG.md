@@ -128,3 +128,18 @@ spec defines no light-red background; monogram letters are Instrument Serif at 2
 only needs 3:1 (WCAG large text); `ConsentSheet` closes instantly (the spec only defines the slide-up).
 
 **You reviewed / changed:** _(fill in after your review)_
+
+## Phase 3, commit 2 follow-ups (owner decisions, 2026-11-22)
+
+- **Failed pill** is now heads-up amber (`#8A5200` on `#FFF0D6`) with its icon; red is reserved for
+  destructive actions (DESIGN_NOTES "Color roles"). Axe passes on all pill stories.
+- **Sheet close animation** (~180ms slide-down + scrim fade) turned out clean with `<dialog>`: set
+  `data-closing`, wait for the animation, then `close()`. Three new play tests; two deliberate sabotages
+  (remove the safety-net timer; never mark as closing) were each caught. Not a `@starting-style` /
+  `allow-discrete` CSS-only approach: those would close the dialog before focus could return.
+- Reduced-motion 200ms fade confirmed by the owner.
+- **Process:** PR #4 was merged by the owner's account (`bhumikaguptaa`) 17 minutes after I opened it;
+  commit 2 therefore went into new PR #5. Branch protection is now on (required check `verify`, PR
+  required, no force pushes, admins included, branch must be up to date), the repo is public, and
+  squash is the only merge method; all read back from the API. From here: one small PR per slice,
+  each branched from `main`.

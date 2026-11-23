@@ -12,7 +12,7 @@ export type PillStatus =
   | 'canceled'
   | 'expired';
 
-type Tone = 'success' | 'heads-up' | 'danger' | 'neutral';
+type Tone = 'success' | 'heads-up' | 'failed' | 'neutral';
 
 const svg = (children: ReactNode) => (
   <svg
@@ -55,7 +55,7 @@ const CONFIG: Record<PillStatus, { label: string; tone: Tone; icon: ReactNode }>
   pending: { label: 'Pending', tone: 'heads-up', icon: icons.clock },
   past_due: { label: 'Past due', tone: 'heads-up', icon: icons.alert },
   needs_review: { label: 'Needs review', tone: 'heads-up', icon: icons.alert },
-  failed: { label: 'Failed', tone: 'danger', icon: icons.cross },
+  failed: { label: 'Failed', tone: 'failed', icon: icons.cross },
   canceled: { label: 'Canceled', tone: 'neutral', icon: icons.dash },
   expired: { label: 'Expired', tone: 'neutral', icon: icons.dash },
 };
@@ -63,7 +63,8 @@ const CONFIG: Record<PillStatus, { label: string; tone: Tone; icon: ReactNode }>
 const TONE_CLASS: Record<Tone, string> = {
   success: 'bg-success-pill-bg text-success-pill-text border-transparent',
   'heads-up': 'bg-headsup-bg text-headsup-text border-headsup-border',
-  danger: 'bg-surface text-danger border-danger',
+  // Failed is a heads-up, not an alarm: amber ink on the heads-up tint (5.68:1). Red is for destructive actions only.
+  failed: 'bg-headsup-bg text-amber-ink border-headsup-border',
   neutral: 'bg-divider text-ink-2 border-line',
 };
 

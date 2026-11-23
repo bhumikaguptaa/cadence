@@ -139,6 +139,67 @@ export const FocusReturnsAfterNotNow: Story = {
   },
 };
 
+/** The exit animation runs first (data-closing), then the dialog really closes and focus returns. */
+export const ClosesWithAnExitAnimation: Story = {
+  args: { open: false, onClose: fn(), title: 't', children: 'c' },
+  render: () => <Demo />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', { name: 'Open sheet' });
+    await userEvent.click(trigger);
+    const dialog = dialogOf(canvasElement);
+    await waitFor(() => expect(dialog.open).toBe(true));
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+    // Mid-exit: still open, marked as closing, and not clickable.
+    await expect(dialog.open).toBe(true);
+    await expect(dialog.hasAttribute('data-closing')).toBe(true);
+    await waitFor(() => expect(dialog.open).toBe(false));
+    await expect(dialog.hasAttribute('data-closing')).toBe(false);
+    await expect(trigger).toHaveFocus();
+  },
+};
+
+/** Safety net: with animations disabled no animationend ever fires, yet the sheet must still close. */
+export const ClosesEvenIfNoAnimationRuns: Story = {
+  args: { open: false, onClose: fn(), title: 't', children: 'c' },
+  render: () => (
+    <>
+      <style>{'.cd-sheet, .cd-sheet::backdrop { animation: none !important; }'}</style>
+      <Demo />
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', { name: 'Open sheet' });
+    await userEvent.click(trigger);
+    const dialog = dialogOf(canvasElement);
+    await waitFor(() => expect(dialog.open).toBe(true));
+
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(dialog.open).toBe(false), { timeout: 1500 });
+    await expect(trigger).toHaveFocus();
+  },
+};
+
+/** Reopening during the exit cancels it: the sheet stays open and usable. */
+export const ReopeningDuringExitKeepsItOpen: Story = {
+  args: { open: false, onClose: fn(), title: 't', children: 'c' },
+  render: () => <Demo />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', { name: 'Open sheet' });
+    await userEvent.click(trigger);
+    const dialog = dialogOf(canvasElement);
+    await waitFor(() => expect(dialog.open).toBe(true));
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+    await expect(dialog.hasAttribute('data-closing')).toBe(true);
+    // The exit is running; the page behind is inert, so reopen the way the app would: programmatically.
+    trigger.click();
+    await new Promise((r) => setTimeout(r, 600));
+    await expect(dialog.open).toBe(true);
+    await expect(dialog.hasAttribute('data-closing')).toBe(false);
+  },
+};
+
 export const ScrimClickCloses: Story = {
   args: { open: false, onClose: fn(), title: 't', children: 'c' },
   render: () => <Demo />,
